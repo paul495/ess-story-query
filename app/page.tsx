@@ -1,65 +1,43 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import { SearchForm } from '@/components/search-form';
+import { ResultsTable } from '@/components/results-table';
+import { Story } from './actions';
 
 export default function Home() {
+  const [results, setResults] = useState<Story[]>([]);
+  const [hasSearched, setHasSearched] = useState(false);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="min-h-screen bg-slate-950 text-slate-50 relative overflow-hidden font-sans selection:bg-indigo-500/30">
+      {/* Dynamic Background Effects */}
+      <div className="absolute top-0 -left-1/4 w-[150%] h-[500px] bg-gradient-to-b from-indigo-900/40 via-purple-900/20 to-transparent blur-3xl -z-10 animate-pulse pointer-events-none" style={{ animationDuration: '8s' }} />
+      <div className="absolute top-0 right-0 w-1/3 h-[400px] bg-fuchsia-900/20 blur-3xl -z-10 rounded-full" />
+      <div className="absolute top-1/4 left-1/4 w-[40vw] h-[40vw] bg-blue-900/10 blur-[120px] -z-10 rounded-full mix-blend-screen" />
+
+      <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 relative z-10 transition-all duration-700 ease-in-out">
+        <div className={`text-center transition-all duration-700 ${hasSearched ? 'mb-8 scale-95 opacity-90' : 'mb-16'}`}>
+          <div className="inline-flex items-center justify-center space-x-2 mb-6 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-sm font-medium tracking-wide shadow-sm shadow-indigo-500/10 backdrop-blur-md">
+            <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+            <span>Data Intelligence Hub</span>
+          </div>
+          <h1 className="text-5xl font-extrabold tracking-tight sm:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-indigo-100 drop-shadow-sm mb-4">
+            ESS Story Explorer
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mt-4 max-w-2xl mx-auto text-lg text-slate-400 sm:text-xl font-light leading-relaxed">
+            Query, filter, and analyze production data with precision.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="transform transition-all duration-500 w-full max-w-5xl mx-auto">
+          <SearchForm onResults={(res) => { setResults(res); setHasSearched(true); }} />
         </div>
-      </main>
-    </div>
+
+        <div className={`transition-all duration-1000 ease-out ${hasSearched ? 'opacity-100 translate-y-0 mt-8' : 'opacity-0 translate-y-10 pointer-events-none absolute'}`}>
+          <ResultsTable results={results} />
+        </div>
+      </div>
+    </main>
   );
 }
