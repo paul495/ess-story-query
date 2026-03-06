@@ -13,6 +13,7 @@ export type Story = {
     Story_Synopsis: string;
     Story_Summary: string;
     Ministry_Category: string;
+    Segment_Language: string;
 };
 
 export async function searchStories(formData: FormData) {
@@ -25,6 +26,7 @@ export async function searchStories(formData: FormData) {
     const youtubeLink = formData.get("youtubeLink") as string;
     const storySynopsis = formData.get("storySynopsis") as string;
     const storySummary = formData.get("storySummary") as string;
+    const segmentLanguage = formData.get("segmentLanguage") as string;
 
     let query = `
         SELECT 
@@ -37,7 +39,8 @@ export async function searchStories(formData: FormData) {
             y.Youtube_Links,
             e.Segment_Synopsis,
             ss."Story Summary" as Story_Summary,
-            e.Ministry_Category
+            e.Ministry_Category,
+            e.Segment_Language
         FROM ESS_EssSF e
         LEFT JOIN ESS_BOX_EssBox s ON e.ESS_CODE = s.ESS_CODE
         LEFT JOIN StoryData_Story_sql ss ON e.ESS_CODE = ss.ESS_CODE
@@ -91,6 +94,11 @@ export async function searchStories(formData: FormData) {
         args.push(`%${storySummary}%`);
     }
 
+    if (segmentLanguage) {
+        query += " AND e.Segment_Language LIKE ?";
+        args.push(`%${segmentLanguage}%`);
+    }
+
     query += " LIMIT 50";
 
     try {
@@ -106,6 +114,7 @@ export async function searchStories(formData: FormData) {
             Story_Synopsis: String(row.Segment_Synopsis || ""),
             Story_Summary: String(row.Story_Summary || ""),
             Ministry_Category: String(row.Ministry_Category || ""),
+            Segment_Language: String(row.Segment_Language || ""),
         }));
         return stories;
     } catch (e) {

@@ -2,7 +2,7 @@
 
 import React, { useTransition, useState, useRef } from "react";
 import { searchStories } from "@/app/actions";
-import { Loader2, Search, Calendar, Link as LinkIcon, FileText, AlignLeft, Hash, Film, User, Tag } from "lucide-react";
+import { Loader2, Search, Calendar, Link as LinkIcon, FileText, AlignLeft, Hash, Film, User, Tag, Globe, ExternalLink } from "lucide-react";
 
 interface SearchFormProps {
     onResults: (results: any[]) => void;
@@ -18,6 +18,30 @@ export function SearchForm({ onResults }: SearchFormProps) {
         startTransition(async () => {
             const results = await searchStories(formData);
             onResults(results);
+
+            const essCodeInput = formData.get('essCode') as string;
+            // Auto-populate form if searched by an exact ESS code and a result is found
+            if (essCodeInput && results.length > 0) {
+                const story = results[0];
+                if (story.ESS_CODE.toLowerCase() === essCodeInput.toLowerCase()) {
+                    const setVal = (name: string, value: string) => {
+                        const el = form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+                        if (el) {
+                            el.value = value || '';
+                        }
+                    };
+
+                    setVal('segmentName', story.Segment_Name);
+                    setVal('producer', story.Produced_By);
+                    if (story.Approval_Status) setVal('status', story.Approval_Status);
+                    setVal('theme', story.Story_Theme);
+                    if (story.Upload_Date) setVal('uploadDate', story.Upload_Date.substring(0, 10));
+                    setVal('youtubeLink', story.Youtube_Link);
+                    setVal('storySynopsis', story.Story_Synopsis);
+                    setVal('segmentLanguage', story.Segment_Language);
+                    setVal('storySummary', story.Story_Summary);
+                }
+            }
         });
     }
 
@@ -29,6 +53,17 @@ export function SearchForm({ onResults }: SearchFormProps) {
     function handleChange(event: React.ChangeEvent<HTMLFormElement>) {
         const target = event.target as unknown as HTMLInputElement;
         if (target.name === 'essCode') {
+            if (formRef.current) {
+                // Clear other fields to prevent old values from restricting the new query
+                const elements = formRef.current.elements;
+                ['segmentName', 'producer', 'theme', 'uploadDate', 'youtubeLink', 'storySynopsis', 'segmentLanguage', 'storySummary'].forEach(name => {
+                    const el = elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement;
+                    if (el) el.value = '';
+                });
+                const statusEl = elements.namedItem('status') as HTMLSelectElement;
+                if (statusEl) statusEl.value = 'All';
+            }
+
             const regex = /^E-0\d{5}$/;
             if (regex.test(target.value) || target.value.length === 0) {
                 if (formRef.current) triggerSearch(formRef.current);
@@ -38,7 +73,7 @@ export function SearchForm({ onResults }: SearchFormProps) {
 
     const inputClasses = "mt-1 block w-full rounded-xl border border-slate-700/50 bg-slate-800/50 text-slate-200 shadow-inner placeholder:text-slate-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm p-3 transition-colors duration-200 backdrop-blur-sm";
     const labelClasses = "flex items-center text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1";
-
+    const txClasses = "mt-1 block w-full rounded-xl border border-slate-700/50 bg-slate-800/50 text-slate-200 shadow-inner placeholder:text-slate-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm p-3 transition-colors duration-200 backdrop-blur-sm h-48 overflow-y-auto resize-none custom-scrollbar";
     return (
         <form ref={formRef} onSubmit={handleSubmit} onChange={handleChange} className="bg-slate-900/40 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-slate-700/50 ring-1 ring-white/5 space-y-6 relative overflow-hidden group">
             {/* Subtle glow effect behind form */}
@@ -97,26 +132,64 @@ export function SearchForm({ onResults }: SearchFormProps) {
                     </div>
 
                     <div>
-                        <label htmlFor="youtubeLink" className={labelClasses}>
-                            <LinkIcon className="w-4 h-4 mr-1.5 text-red-400" /> YouTube Link
-                        </label>
-                        <input type="text" name="youtubeLink" id="youtubeLink" placeholder="youtu.be/..." className={inputClasses} />
+                        <div className="flex items-center justify-between">
+                            <label htmlFor="youtubeLink" className={labelClasses}>
+                                <LinkIcon className="w-4 h-4 mr-1.5 text-red-400" /> YouTube Link
+                            </label>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (formRef.current) {
+                                        const ytInput = formRef.current.elements.namedItem('youtubeLink') as HTMLInputElement;
+                                        if (ytInput && ytInput.value) {
+                                            const url = ytInput.value.startsWith('http') ? ytInput.value : `https://${ytInput.value}`;
+                                            window.open(url, '_blank', 'noopener,noreferrer');
+                                        }
+                                    }
+                                }}
+                                className="inline-flex items-center justify-center p-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-200 border border-red-500/20 hover:border-red-500 hover:shadow-lg hover:shadow-red-500/20 mb-1"
+                                title="Open link in YouTube"
+                            >
+                                <ExternalLink className="w-3.5 h-3.5" />
+                            </button>
+                        </div>
+                        <input type="text" name="youtubeLink" id="youtubeLink" placeholder="youtu.be/..." className={inputClasses.replace("mt-1", "mt-0")} />
                     </div>
 
+                    <div>
+                        <label htmlFor="segmentLanguage" className={labelClasses}>
+                            <Globe className="w-4 h-4 mr-1.5 text-indigo-300" /> Language
+                        </label>
+                        <input type="text" name="segmentLanguage" id="segmentLanguage" placeholder="e.g. English" className={inputClasses} />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <div>
                         <label htmlFor="storySynopsis" className={labelClasses}>
                             <AlignLeft className="w-4 h-4 mr-1.5 text-cyan-400" /> Synopsis
                         </label>
-                        <input type="text" name="storySynopsis" id="storySynopsis" placeholder="Keywords in synopsis..." className={inputClasses} />
+                        <textarea
+                            name="storySynopsis"
+                            id="storySynopsis"
+                            placeholder="Keywords in synopsis..."
+                            className={txClasses}
+                        />
                     </div>
 
-                    <div className="lg:col-span-3 xl:col-span-4">
+                    <div>
                         <label htmlFor="storySummary" className={labelClasses}>
                             <FileText className="w-4 h-4 mr-1.5 text-fuchsia-400" /> Story Summary
                         </label>
-                        <input type="text" name="storySummary" id="storySummary" placeholder="Search within the full summary..." className={inputClasses} />
+                        <textarea
+                            name="storySummary"
+                            id="storySummary"
+                            placeholder="Search within the full summary..."
+                            className={txClasses}
+                        />
                     </div>
                 </div>
+
 
                 <div className="mt-8 flex items-center justify-between border-t border-slate-700/50 pt-6">
                     <p className="text-sm text-slate-400">

@@ -31,7 +31,7 @@ export function ResultsTable({ results }: ResultsTableProps) {
                             <tr>
                                 <th scope="col" className="py-4 pl-6 pr-3 text-xs font-semibold text-slate-300 uppercase tracking-wider whitespace-nowrap">ESS Code</th>
                                 <th scope="col" className="px-3 py-4 text-xs font-semibold text-slate-300 uppercase tracking-wider whitespace-nowrap">Story Name & Producer</th>
-                                <th scope="col" className="px-3 py-4 text-xs font-semibold text-slate-300 uppercase tracking-wider whitespace-nowrap">Theme & Status</th>
+                                <th scope="col" className="px-3 py-4 text-xs font-semibold text-slate-300 uppercase tracking-wider whitespace-nowrap">Theme, Status & Lang</th>
                                 <th scope="col" className="px-3 py-4 text-xs font-semibold text-slate-300 uppercase tracking-wider min-w-[200px]">Synopsis</th>
                                 <th scope="col" className="px-3 py-4 text-xs font-semibold text-slate-300 uppercase tracking-wider min-w-[250px]">Summary</th>
                                 <th scope="col" className="px-3 py-4 text-xs font-semibold text-slate-300 uppercase tracking-wider whitespace-nowrap">Upload Date</th>
@@ -67,6 +67,11 @@ export function ResultsTable({ results }: ResultsTableProps) {
                                                     {story.Ministry_Category}
                                                 </span>
                                             )}
+                                            {story.Segment_Language && (
+                                                <span className="inline-flex items-center text-[10px] font-medium text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20 mb-0.5 whitespace-nowrap" title={`Language: ${story.Segment_Language}`}>
+                                                    {story.Segment_Language}
+                                                </span>
+                                            )}
                                             <span className="text-sm text-slate-400 line-clamp-1" title={story.Story_Theme}>
                                                 {story.Story_Theme || "—"}
                                             </span>
@@ -82,13 +87,13 @@ export function ResultsTable({ results }: ResultsTableProps) {
                                     </td>
 
                                     <td className="px-3 py-5">
-                                        <div className="text-sm text-slate-300 line-clamp-3 leading-relaxed relative group/tooltip" title={story.Story_Synopsis}>
+                                        <div className="text-sm text-slate-300 whitespace-pre-wrap leading-relaxed">
                                             {story.Story_Synopsis || <span className="text-slate-500 italic">No synopsis available</span>}
                                         </div>
                                     </td>
 
                                     <td className="px-3 py-5">
-                                        <div className="text-sm text-slate-300 line-clamp-3 leading-relaxed" title={story.Story_Summary}>
+                                        <div className="text-sm text-slate-300 whitespace-pre-wrap leading-relaxed">
                                             {story.Story_Summary || <span className="text-slate-500 italic">No summary available</span>}
                                         </div>
                                     </td>
