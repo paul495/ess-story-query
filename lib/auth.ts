@@ -1,18 +1,27 @@
 import { cookies } from 'next/headers';
 
 // In a real app, this might come from a DB or env vars
-function getAuthorizedEmails() {
-    const envEmails = process.env.AUTHORIZED_EMAILS;
-    if (!envEmails) {
-        // Default list if not set in environment
-        return ['test@example.com'];
+function getAuthorizedUsers() {
+    const envUsers = process.env.AUTHORIZED_USERS;
+    if (!envUsers) {
+        // Default list if not set in environment (email:password)
+        return [{ email: 'test@example.com', password: 'password123' }];
     }
-    return envEmails.split(',').map(email => email.trim().toLowerCase());
+    return envUsers.split(',').map(pair => {
+        const [email, password] = pair.split(':');
+        return {
+            email: email?.trim().toLowerCase() || '',
+            password: password?.trim() || ''
+        };
+    });
 }
 
-export function isEmailAuthorized(email: string) {
-    const authorizedEmails = getAuthorizedEmails();
-    return authorizedEmails.includes(email.trim().toLowerCase());
+export function verifyCredentials(email: string, password: string) {
+    const authorizedUsers = getAuthorizedUsers();
+    const lowerEmail = email.trim().toLowerCase();
+    return authorizedUsers.some(
+        user => user.email === lowerEmail && user.password === password
+    );
 }
 
 export async function createSession() {

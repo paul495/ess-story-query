@@ -1,14 +1,15 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { isEmailAuthorized, createSession, deleteSession } from '@/lib/auth';
+import { verifyCredentials, createSession, deleteSession } from '@/lib/auth';
 
 export async function login(formData: FormData) {
     const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
 
-    if (!email || !isEmailAuthorized(email)) {
+    if (!email || !password || !verifyCredentials(email, password)) {
         return {
-            error: 'Unauthorized email address.',
+            error: 'Invalid email or password.',
         };
     }
 

@@ -44,7 +44,7 @@ export default function LoginPage() {
                         Welcome Back
                     </h2>
                     <p className="mt-3 text-sm text-slate-400">
-                        Sign in with an authorized email to access the Data Intelligence Hub.
+                        Sign in with an authorized email and password to access the Data Intelligence Hub.
                     </p>
                 </div>
 
@@ -63,6 +63,23 @@ export default function LoginPage() {
                                     required
                                     className="appearance-none block w-full px-3 py-2.5 border border-slate-700 bg-slate-800/50 rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all sm:text-sm text-slate-100 placeholder:text-slate-500"
                                     placeholder="you@example.com"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label htmlFor="password" className="block text-sm font-medium text-slate-300">
+                                Password
+                            </label>
+                            <div className="mt-2 text-slate-300">
+                                <input
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    autoComplete="current-password"
+                                    required
+                                    className="appearance-none block w-full px-3 py-2.5 border border-slate-700 bg-slate-800/50 rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all sm:text-sm text-slate-100 placeholder:text-slate-500"
+                                    placeholder="••••••••"
                                 />
                             </div>
                         </div>
