@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { SearchForm } from '@/components/search-form';
 import { ResultsTable } from '@/components/results-table';
+import { logout } from '@/app/auth/actions';
 import { Story } from './actions';
 
 export default function Home() {
@@ -15,6 +16,18 @@ export default function Home() {
       <div className="absolute top-0 -left-1/4 w-[150%] h-[500px] bg-gradient-to-b from-indigo-900/40 via-purple-900/20 to-transparent blur-3xl -z-10 animate-pulse pointer-events-none" style={{ animationDuration: '8s' }} />
       <div className="absolute top-0 right-0 w-1/3 h-[400px] bg-fuchsia-900/20 blur-3xl -z-10 rounded-full" />
       <div className="absolute top-1/4 left-1/4 w-[40vw] h-[40vw] bg-blue-900/10 blur-[120px] -z-10 rounded-full mix-blend-screen" />
+
+      {/* Header controls layout */}
+      <div className="absolute top-4 right-4 z-20">
+        <form action={logout}>
+          <button
+            type="submit"
+            className="px-4 py-2 text-sm font-medium text-slate-300 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 hover:border-slate-600 rounded-lg transition-all backdrop-blur-md shadow-sm"
+          >
+            Sign Out
+          </button>
+        </form>
+      </div>
 
       <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 relative z-10 transition-all duration-700 ease-in-out">
         <div className={`text-center transition-all duration-700 ${hasSearched ? 'mb-8 scale-95 opacity-90' : 'mb-16'}`}>
